@@ -14,30 +14,36 @@ int cost(void* state, int i, int o)
     return edge->p_cost[i][o] + optimization(edge->next, o);
 }
 
+int best(void* state, int i)
+{
+    edge_t* edge = (edge_t*)state;
+    int init = 0;
+    int best_o = 0;
+    for(int o = 0; o < edge->out_cnt; o++)
+    {
+        int cost = cost(state, i, o);
+        if(cost > 0 && init == 0)
+        {
+            best = cost;
+            init = 1;
+            continue;
+        }
+            
+        if(best > cost)
+        {
+            best = cost;
+            best_o = o;
+        }
+    }
+    return best_o;
+}
+
 void optimize(void* state)
 {
     edge_t* edge = (edge_t*)state;
     for(int i = 0; i < edge->in_cnt; i++)
     {
-        int init = 0;
-        int best_o = 0;
-        for(int o = 0; o < edge->out_cnt; o++)
-        {
-            int cost = cost(state, i, o);
-            if(cost > 0 && init == 0)
-            {
-                best = cost;
-                init = 1;
-                continue;
-            }
-                
-            if(best > cost)
-            {
-                best = cost;
-                best_o = o;
-            }
-        }
-
+        int best_o = best(state, i);
         for(int o = 0; o < edge->out_cnt; o++)
         {
             if(best_o == o)
@@ -74,7 +80,7 @@ int main()
     edge_t* p = path->tail;
     while(p)
     {
-        optimize(p, p, p);
+        optimize(p);
         p = p->prev;
     }
 

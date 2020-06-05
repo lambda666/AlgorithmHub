@@ -181,7 +181,7 @@ int main()
     }
 
     //print best strategy
-    int toltal_cost = 0;
+    int total_cost = 0;
     int best_i;
     p = path->head;
     printf("\nbest strategy:");
@@ -190,14 +190,14 @@ int main()
         if(p == path->head)
         {
             best_i = 0;
-            toltal_cost += p->p_cost[best_i * p->out_cnt + p->p_best[best_i]];
+            total_cost += p->p_cost[best_i * p->out_cnt + p->p_best[best_i]];
         }
-        //printf("->%d", toltal_cost);
+        //printf("->%d", total_cost);
         best_i = p->p_best[best_i];
         printf("->%d", best_i);
         p = p->next;;
     }
-    printf(", toltal_cost:%d\n", toltal_cost);
+    printf(", total_cost:%d\n", total_cost);
     
     p = path->tail;
     while(p)

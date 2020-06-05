@@ -41,11 +41,10 @@ int cost(void* state, int i, int o)
     return edge->p_cost[i * edge->out_cnt + o] + optimization(edge->next, o);
 }
 
-int best(void* state, int i)
+int best(void* state, int i, int* best_cost)
 {
     edge_t* edge = (edge_t*)state;
     int init = 0;
-    int best_i = 0;
     int best_o = 0;
     for(int o = 0; o < edge->out_cnt; o++)
     {
@@ -53,7 +52,7 @@ int best(void* state, int i)
         printf("const:%d\n", cst);
         if(cst > 0 && init == 0)
         {
-            best_i = cst;
+            *best_cost = cst;
             best_o = o;
             init = 1;
             continue;
@@ -61,7 +60,7 @@ int best(void* state, int i)
             
         if(cst > 0 && best_i > cst)
         {
-            best_i = cst;
+            *best_cost = cst;
             best_o = o;
         }
     }
@@ -77,13 +76,15 @@ void optimize(void* state)
     for(int i = 0; i < edge->in_cnt; i++)
     {
         printf("in:%d\n", i);
-        int best_o = best(state, i);
+        int cost;
+        int best_o = best(state, i, &cost);
         for(int o = 0; o < edge->out_cnt; o++)
         {
             if(best_o == o)
                 continue;
             edge->p_cost[i * edge->out_cnt + o] = 0;
         }
+        edge->p_cost[i] = cost;
         edge->p_best[i] = best_o;
     }
 }
@@ -179,7 +180,7 @@ int main()
     }
 
     //print best strategy
-    int toltal_cost = 0;
+    //int toltal_cost = 0;
     int best_i;
     p = path->head;
     printf("\nbest strategy:");
@@ -187,11 +188,11 @@ int main()
     {
         if(p == path->head)
             best_i = 0;
-        toltal_cost += p->p_cost[best_i * p->out_cnt + p->p_best[best_i]];
+        //toltal_cost += p->p_cost[best_i * p->out_cnt + p->p_best[best_i]];
         //printf("->%d", toltal_cost);
         best_i = p->p_best[best_i];
         printf("->%d", best_i);
         p = p->next;;
     }
-    printf(", toltal_cost:%d\n", toltal_cost);
+    printf(", toltal_cost:%d\n", path->head->p_cost[path->head->p_best[0]]);
 }

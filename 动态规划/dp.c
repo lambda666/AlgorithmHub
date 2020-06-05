@@ -8,7 +8,6 @@ typedef struct edge_t{
     int in_cnt;
     int out_cnt;
     int* p_cost;
-
     int* p_best;
 
     struct edge_t* prev;
@@ -58,7 +57,7 @@ int best(void* state, int i, int* best_cost)
             continue;
         }
             
-        if(cst > 0 && best_i > cst)
+        if(cst > 0 && *best_cost > cst)
         {
             *best_cost = cst;
             best_o = o;
@@ -126,8 +125,8 @@ int main()
             sscanf(p+1,"%dx%d", &row, &col);
             printf(">%dx%d:\n", row, col);
             edge_t* entry = (edge_t*) calloc(1, sizeof(edge_t));
-            entry->p_cost = (int*)calloc(row*col, sizeof(int));
-            entry->p_best = (int*)calloc(row, sizeof(int));
+            entry->p_cost = (int*)malloc(row*col*sizeof(int));
+            entry->p_best = (int*)malloc(row*sizeof(int));
             entry->in_cnt = row;
             entry->out_cnt = col;
             index = 0;
@@ -151,7 +150,7 @@ int main()
         
         char tmp[32];
         p = line;
-        while ((pp = strchr(p, ' ')) != NULL)
+        while ((pp = strchr(p, ' ')) != NULL && index < row*col)
         {
             if(pp > p)
             {
@@ -162,7 +161,7 @@ int main()
                 p = pp + 1;
             }
         }
-        if(*p)
+        if(*p && index < row*col)
         {
             ptr->p_cost[index++] = atoi(p);
             printf("%s,", p);
@@ -184,6 +183,7 @@ int main()
     int total_cost = 0;
     int best_i;
     p = path->head;
+    
     printf("\nbest strategy:");
     while(p)
     {
@@ -199,13 +199,33 @@ int main()
     }
     printf(", total_cost:%d\n", total_cost);
     
-    p = path->tail;
+    p = path->head;
     while(p)
     {
-        free(p->p_cost);
-        free(p->p_best);
+        /*
+        printf("in_cnt:%d\n", p->in_cnt);
+        printf("out_cnt:%d\n", p->out_cnt);
+        
+        for(int i = 0; i < p->in_cnt; i++)
+        {
+            for(int j = 0; j < p->out_cnt; j++)
+            {
+                printf("%d,", p->p_cost[i*p->out_cnt+j]);
+            }
+            printf("\n");
+        }
+        */
+        free(((void*)p->p_cost));
+        /*
+        for(int k = 0; k < p->in_cnt; k++)
+        {
+            printf("%d,", p->p_best[k]);
+        }
+        printf("\n");
+        */
+        free(((void*)p->p_best));
         edge_t* tmp = p;
-        p = p->prev;
+        p = p->next;
         free(tmp);
     }
     free(path);

@@ -204,8 +204,11 @@ int main()
     {
         free(p->p_cost);
         free(p->p_best);
+        edge_t* tmp = p;
         p = p->prev;
+        free(tmp);
     }
+    free(path);
     
     return 0;
 }

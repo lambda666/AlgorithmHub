@@ -81,10 +81,11 @@ void optimize(void* state)
         for(int o = 0; o < edge->out_cnt; o++)
         {
             if(best_o == o)
-                continue;
-            edge->p_cost[i * edge->out_cnt + o] = 0;
+                edge->p_cost[i * edge->out_cnt + o] = cost;
+            else
+                edge->p_cost[i * edge->out_cnt + o] = 0;
         }
-        edge->p_cost[i] = cost;
+        
         edge->p_best[i] = best_o;
     }
 }

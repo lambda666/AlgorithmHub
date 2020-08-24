@@ -77,14 +77,7 @@ void optimize(void* state)
         printf("in:%d\n", i);
         int cost;
         int best_o = best(state, i, &cost);
-        for(int o = 0; o < edge->out_cnt; o++)
-        {
-            if(best_o == o)
-                edge->p_cost[i * edge->out_cnt + o] = cost;
-            else
-                edge->p_cost[i * edge->out_cnt + o] = 0;
-        }
-        
+        edge->p_cost[i * edge->out_cnt + best_o] = cost;        
         edge->p_best[i] = best_o;
     }
 }
@@ -107,7 +100,7 @@ int main()
 #define STR_BUF_LEN 1024
     char line[STR_BUF_LEN];
     memset(line, 0, sizeof(line));
-    int row,col,index;
+    int row,col,index = 0;
     edge_t* ptr = path->head;
 
     while(fgets(line, sizeof(line), fp))
@@ -126,7 +119,9 @@ int main()
             printf(">%dx%d:\n", row, col);
             edge_t* entry = (edge_t*) calloc(1, sizeof(edge_t));
             entry->p_cost = (int*)malloc(row*col*sizeof(int));
+            memset(entry->p_cost, -1, row*col*sizeof(int));
             entry->p_best = (int*)malloc(row*sizeof(int));
+            memset(entry->p_best, -1, row*sizeof(int));
             entry->in_cnt = row;
             entry->out_cnt = col;
             index = 0;
@@ -181,7 +176,7 @@ int main()
 
     //print best strategy
     int total_cost = 0;
-    int best_i;
+    int best_i = 0;
     p = path->head;
     
     printf("\nbest strategy:");
